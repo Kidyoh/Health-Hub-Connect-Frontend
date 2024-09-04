@@ -1,3 +1,6 @@
+import { PrismaClient } from '@prisma/client';
+import { withIronSession } from 'next-iron-session';
+
 const prisma = new PrismaClient();
 
 async function handler(req, res) {

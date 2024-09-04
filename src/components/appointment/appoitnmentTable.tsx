@@ -9,11 +9,12 @@ const AppointmentTable = () => {
       .then(response => response.json())
       .then(data => {
         const appointments = data.appointments.map((appointment: { facilityId: any; date: string | number | Date; status: any; facilityName: any; }) => ({
-          name: appointment.facilityName,
+          name: appointment,
           price: appointment.facilityId,
           invoiceDate: new Date(appointment.date).toLocaleDateString(),
           status: appointment.status,
         }));
+        console.log("Appointment data is >>>>>>>>>>>.", appointmentData)
         setAppointmentData(appointments);
       });
   }, []);

@@ -13,10 +13,10 @@ async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const {  facilityId, date } = req.body;
+    const { facilityId, teleconsultationId, date } = req.body;
 
     // Validate input
-    if ( !facilityId || !date) {
+    if (!facilityId || !teleconsultationId || !date) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
@@ -31,6 +31,7 @@ async function handler(req, res) {
         data: {
           userId: session.id,
           facilityId: parseInt(facilityId, 10),
+          teleconsultationId: parseInt(teleconsultationId, 10),
           date: parsedDate,
           status: 'Scheduled',
         },
