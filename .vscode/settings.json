@@ -1,0 +1,23 @@
+{
+    "scss.validate": false,
+    "css.validate": false,
+    "cSpell.words": [
+        "apexcharts",
+        "bodydark",
+        "bottomtop",
+        "boxdark",
+        "easespin",
+        "flatpickr",
+        "graydark",
+        "gridline",
+        "linspin",
+        "satoshi",
+        "strokedark",
+        "topbottom",
+        "xaxistooltip",
+        "xcrosshairs",
+        "yaxistooltip",
+        "zoomin",
+        "zoomout"
+    ]
+}

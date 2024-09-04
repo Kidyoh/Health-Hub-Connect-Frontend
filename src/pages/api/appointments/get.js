@@ -1,6 +1,3 @@
-import { PrismaClient } from '@prisma/client';
-import { withIronSession } from 'next-iron-session';
-
 const prisma = new PrismaClient();
 
 async function handler(req, res) {
@@ -11,9 +8,12 @@ async function handler(req, res) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
 
-            const userId = session.id;
+            const userId = 2;
             const appointments = await prisma.appointment.findMany({
-                where: { userId: userId }
+                where: { userId: userId },
+                include: {
+                    facility: true, // Assuming 'facility' is the relation name
+                },
             });
 
             res.status(200).json({ success: true, appointments });
@@ -26,9 +26,9 @@ async function handler(req, res) {
 }
 
 export default withIronSession(handler, {
-  password: process.env.SECRET_COOKIE_PASSWORD,
-  cookieName: 'next-iron-session/login',
-  cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
-  },
+    password: process.env.SECRET_COOKIE_PASSWORD,
+    cookieName: 'next-iron-session/login',
+    cookieOptions: {
+        secure: process.env.NODE_ENV === "production",
+    },
 });

@@ -8,9 +8,9 @@ const AppointmentTable = () => {
     fetch('/api/appointments/get')
       .then(response => response.json())
       .then(data => {
-        const appointments = data.appointments.map((appointment: { facilityId: any; date: string | number | Date; status: any; }) => ({
-          name: `Facility ${appointment.facilityId}`, 
-          price: appointment.facilityId, 
+        const appointments = data.appointments.map((appointment: { facilityId: any; date: string | number | Date; status: any; facilityName: any; }) => ({
+          name: appointment.facilityName,
+          price: appointment.facilityId,
           invoiceDate: new Date(appointment.date).toLocaleDateString(),
           status: appointment.status,
         }));
@@ -54,13 +54,12 @@ const AppointmentTable = () => {
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <p
-                    className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${
-                        appointmentItem.status === "Scheduled"
-                        ? "bg-success text-success"
-                        : appointmentItem.status === "Unpaid"
-                          ? "bg-danger text-danger"
-                          : "bg-warning text-warning"
-                    }`}
+                    className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${appointmentItem.status === "Scheduled"
+                      ? "bg-success text-success"
+                      : appointmentItem.status === "Unpaid"
+                        ? "bg-danger text-danger"
+                        : "bg-warning text-warning"
+                      }`}
                   >
                     {appointmentItem.status}
                   </p>
