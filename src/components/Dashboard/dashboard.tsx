@@ -7,7 +7,7 @@ import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableOne";
 import CardDataStats from "../CardDataStats";
 import MapOne from "../Maps/MapOne";
-import AppointmentTable from "../appointment/appoitnmentTable";
+import AppointmentTable from "../Tables/Appointment";
 
 const Dashboard: React.FC = () => {
   return (

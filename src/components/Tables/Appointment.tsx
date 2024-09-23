@@ -6,14 +6,22 @@ const AppointmentTable = () => {
   const [appointmentData, setAppointmentData] = useState<Appointment[]>([]);
 
   useEffect(() => {
-    fetch('/api/appointments/get')
+    fetch('/api/appointments/get', {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    })
       .then(response => response.json())
       .then(data => {
-        const appointments = data.appointments.map((appointment: { facilityId: any; date: string | number | Date; status: any; facility: any; }) => ({
-          name: appointment.facility.name,
-          price: appointment.facilityId,
-          invoiceDate: new Date(appointment.date).toLocaleDateString(),
+        const appointments = data.appointments.map((appointment: Appointment) => ({
+          id: appointment.id,
+          date: appointment.date,
+          userId: appointment.userId,
+          facilityId: appointment.facilityId,
+          teleconsultationId: appointment.teleconsultationId,
           status: appointment.status,
+          facility: appointment.facility,
         }));
         console.log("Appointment data is >>>>>>>>>>>.", data)
         setAppointmentData(appointments);
@@ -45,13 +53,17 @@ const AppointmentTable = () => {
               <tr key={key}>
                 <td className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
                   <h5 className="font-medium text-black dark:text-white">
-                    {appointmentItem.name}
+                    {appointmentItem.facility.name}
                   </h5>
-                  <p className="text-sm">{appointmentItem.facility}</p>
+                  <p className="text-sm">{appointmentItem.facility.location}</p>
+                  <p className="text-sm">{appointmentItem.facility.services}</p>
+                  <p className="text-sm">{appointmentItem.facility.hours}</p>
+                  <p className="text-sm">{appointmentItem.facility.contact}</p>
+                  <p className="text-sm">{appointmentItem.facility.type}</p>
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <p className="text-black dark:text-white">
-                    {appointmentItem.invoiceDate}
+                    {new Date(appointmentItem.date).toLocaleDateString()}
                   </p>
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -124,7 +136,7 @@ const AppointmentTable = () => {
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M16.8754 11.6719C16.5379 11.6719 16.2285 11.9531 16.2285 12.3187V14.8219C16.2285 15.075 16.0316 15.2719 15.7785 15.2719H2.22227C1.96914 15.2719 1.77227 15.075 1.77227 14.8219V12.3187C1.77227 11.9812 1.49102 11.6719 1.12539 11.6719C0.759766 11.6719 0.478516 11.9531 0.478516 12.3187V14.8219C0.478516 15.7781 1.23789 16.5375 2.19414 16.5375H15.7785C16.7348 16.5375 17.4941 15.7781 17.4941 14.8219V12.3187C17.5223 11.9531 17.2129 11.6719 16.8754 11.6719Z"
+                          d="M16.8754 11.6719C16.5379 11.6719 16.2285 11.953116.2285 12.3187V14.8219C16.2285 15.075 16.0316 15.2719 15.7785 15.2719H2.22227C1.96914 15.2719 1.77227 15.075 1.77227 14.8219V12.3187C1.77227 11.9812 1.49102 11.6719 1.12539 11.6719C0.759766 11.6719 0.478516 11.9531 0.478516 12.3187V14.8219C0.478516 15.7781 1.23789 16.5375 2.19414 16.5375H15.7785C16.7348 16.5375 17.4941 15.7781 17.4941 14.8219V12.3187C17.5223 11.9531 17.2129 11.6719 16.8754 11.6719Z"
                           fill=""
                         />
                         <path
