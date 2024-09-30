@@ -1,36 +1,38 @@
-import { PrismaClient } from '@prisma/client';
+// /pages/api/appointments/[id].js
+
 import { withIronSession } from 'next-iron-session';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function handler(req, res) {
-    if (req.method === 'DELETE') {
-        try {
-            const session = req.session.get('user');
-            if (!session) {
-                return res.status(401).json({ error: 'Unauthorized' });
-            }
+  const session = req.session.get('user');
 
-            const { id } = req.body;
+  if (!session) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
-            await prisma.appointment.delete({
-                where: { id: parseInt(id) },
-            });
+  const { id } = req.query;
 
-            res.status(200).json({ success: true });
-        } catch (error) {
-            console.error('Error deleting appointment:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    } else {
-        res.status(405).json({ error: 'Method Not Allowed' });
+  if (req.method === 'DELETE') {
+    try {
+      await prisma.appointment.delete({
+        where: { id: parseInt(id, 10) },
+      });
+      return res.status(200).json({ success: true, message: 'Appointment canceled successfully.' });
+    } catch (error) {
+      console.error('Error canceling appointment:', error);
+      return res.status(500).json({ error: 'Failed to cancel appointment.' });
     }
+  } else {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 }
 
 export default withIronSession(handler, {
   password: process.env.SECRET_COOKIE_PASSWORD,
   cookieName: 'next-iron-session/login',
   cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === 'production',
   },
 });

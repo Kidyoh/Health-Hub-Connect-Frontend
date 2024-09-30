@@ -6,27 +6,30 @@ const prisma = new PrismaClient();
 async function handler(req, res) {
   const session = req.session.get('user');
 
-  if (!session) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  if (!session || session.role !== 'ADMIN') {
+    return res.status(403).json({ error: 'Unauthorized' });
   }
 
   if (req.method === 'GET') {
     try {
-      const appointments = await prisma.appointment.findMany({
-        where: { userId: session.id },
-        include: {
-          facility: true,
-          teleconsultation: true,
+      const users = await prisma.user.findMany({
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          role: true,
+          status: true,
+          createdAt: true,
         },
       });
 
-      return res.status(200).json({ success: true, appointments });
+      res.status(200).json({ success: true, users });
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      return res.status(500).json({ error: 'Failed to fetch appointments.' });
+      res.status(500).json({ error: 'Failed to fetch users.' });
     }
   } else {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
   }
 }
 
