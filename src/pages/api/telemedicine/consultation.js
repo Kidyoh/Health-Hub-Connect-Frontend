@@ -11,34 +11,33 @@ async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { id } = req.query;
-
-  if (req.method === 'PUT') {
-    const { date, status } = req.body;
+  if (req.method === 'POST') {
+    const { doctor, date } = req.body;
 
     // Validate input
-    if (!date && !status) {
-      return res.status(400).json({ error: 'Date or status is required.' });
+    if (!doctor || !date) {
+      return res.status(400).json({ error: 'Doctor and date are required.' });
     }
 
-    const parsedDate = date ? parseISO(date) : undefined;
-    if (date && isNaN(parsedDate)) {
+    const parsedDate = parseISO(date);
+    if (isNaN(parsedDate)) {
       return res.status(400).json({ error: 'Invalid date format.' });
     }
 
     try {
-      const updatedAppointment = await prisma.appointment.update({
-        where: { id: parseInt(id, 10) },
+      const teleconsultation = await prisma.teleconsultation.create({
         data: {
-          ...(date && { date: parsedDate }),
-          ...(status && { status }),
+          userId: session.id,
+          doctor,
+          date: parsedDate,
+          status: 'Pending',
         },
       });
 
-      return res.status(200).json({ success: true, updatedAppointment });
+      return res.status(201).json({ success: true, teleconsultation });
     } catch (error) {
-      console.error('Error updating appointment:', error);
-      return res.status(500).json({ error: 'Failed to update appointment.' });
+      console.error('Error starting telemedicine consultation:', error);
+      return res.status(500).json({ error: 'Failed to start telemedicine consultation.' });
     }
   } else {
     return res.status(405).json({ error: 'Method not allowed' });
