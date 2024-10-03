@@ -30,7 +30,8 @@ model User {
   location            String?
   phone               String?
   role                Role               @default(USER)
-  status              Status             @default(PENDING) // New status field
+  status              Status             @default(PENDING) 
+  rate                Float?             // Teleconsultor rate (optional)
   appointments        Appointment[]
   teleconsultations   Teleconsultation[]
   notifications       Notification[]
@@ -42,14 +43,14 @@ model User {
   updatedAt           DateTime           @updatedAt
 
   healthcareFacility  HealthcareFacility? @relation(fields: [healthcareFacilityId], references: [id])
-  healthcareFacilityId Int?               @unique // Make this field unique for one-to-one relation
+  healthcareFacilityId Int?               @unique 
 }
 
 model HealthcareFacility {
   id           Int      @id @default(autoincrement())
   name         String
   location     String
-  services     String   // Changed from String[] to String (comma-separated values)
+  services     String   
   hours        String
   contact      String
   type         String
@@ -71,21 +72,11 @@ model Session {
   @@index([userId])
 }
 
-model Pharmacy {
-  id        Int      @id @default(autoincrement())
-  name      String
-  location  String
-  contact   String
-  hours     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Appointment {
   id                 Int                @id @default(autoincrement())
   date               DateTime
   userId             Int
-  facilityId         Int
+  facilityId         Int?
   teleconsultationId Int?
   status             String
   transactions       Transaction[]
@@ -93,8 +84,8 @@ model Appointment {
   updatedAt          DateTime           @updatedAt
 
   user               User               @relation(fields: [userId], references: [id])
-  facility           HealthcareFacility @relation(fields: [facilityId], references: [id])
-  teleconsultation   Teleconsultation?  @relation(fields: [teleconsultationId], references: [id])
+  facility           HealthcareFacility? @relation(fields: [facilityId], references: [id])
+  teleconsultation   Teleconsultation?   @relation(fields: [teleconsultationId], references: [id])
 
   @@index([userId])
   @@index([facilityId])
@@ -105,7 +96,7 @@ model MedicalInformation {
   id        Int      @id @default(autoincrement())
   title     String
   content   String
-  keywords  String   // Changed from String[] to String (comma-separated values)
+  keywords  String   
   category  String
   author    String
   createdAt DateTime @default(now())
@@ -137,6 +128,8 @@ model Teleconsultation {
   userId       Int
   doctor       String
   status       String
+  sessionUrl   String?        // URL for video consultation session
+  paymentStatus String       @default("Pending") // New field to track payment status (e.g., 'Pending', 'Paid')
   transactions Transaction[]
   appointments Appointment[]
   createdAt    DateTime      @default(now())
@@ -197,8 +190,8 @@ model Prescription {
   id        Int      @id @default(autoincrement())
   userId    Int
   doctor    String
-  medicines String   // Changed from String[] to String (comma-separated values)
-  dosage    String   // Changed from String[] to String (comma-separated values)
+  medicines String   
+  dosage    String   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

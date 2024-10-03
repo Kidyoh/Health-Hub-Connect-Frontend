@@ -1,14 +1,12 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import TableOne from "@/components/Tables/TableOne";
-import AppointmentTable from "@/components/Tables/Appointment";
-import TableTwo from "@/components/Tables/TableTwo";
 
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import TeleconsultationsList from "@/components/teleconsultations/teleconsultations";
+import TeleconsultorsList from "@/components/teleconsultors/teleConsultors";
+import BookTeleconsultation from "@/components/teleconsultors/book";
 
 export const metadata: Metadata = {
-  title: "Appointment Table and Full information",
+  title: "Teleconsultors Table and Full information",
   description:
     "This is the appointment page where users can find full information about their appointments and so",
 };
@@ -16,11 +14,10 @@ export const metadata: Metadata = {
 const TablesPage = () => {
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="Appointment" />
+      <Breadcrumb pageName="TeleConsultors" />
 
       <div className="flex flex-col gap-10">
-        {/* <AppointmentTable /> */}
-        <TeleconsultationsList />
+        <BookTeleconsultation />
       </div>
     </DefaultLayout>
   );

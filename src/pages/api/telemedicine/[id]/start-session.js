@@ -6,7 +6,10 @@ const prisma = new PrismaClient();
 
 async function handler(req, res) {
   const session = req.session.get('user');
-  const { id } = req.query;
+  const { id } = req.query;  // Correctly destructuring the ID from the request query
+
+  // Log the session to verify authentication
+  console.log("Session Data:", session);
 
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -14,7 +17,7 @@ async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      // Find the consultation
+      // Find the consultation based on the ID
       const consultation = await prisma.teleconsultation.findUnique({
         where: { id: parseInt(id, 10) },
       });
@@ -23,12 +26,12 @@ async function handler(req, res) {
         return res.status(404).json({ error: 'Consultation not found or you are not authorized.' });
       }
 
-      // Check if room URL already exists
+      // If room already exists, return it
       if (consultation.sessionUrl) {
         return res.status(200).json({ success: true, roomUrl: consultation.sessionUrl });
       }
 
-      // If no room exists, create a new one
+      // Create a Daily.co room if it doesn't exist
       const roomResponse = await axios.post(
         'https://api.daily.co/v1/rooms',
         {
@@ -46,7 +49,7 @@ async function handler(req, res) {
 
       const roomUrl = roomResponse.data.url;
 
-      // Update consultation with the room URL
+      // Update the consultation with the new room URL
       const updatedConsultation = await prisma.teleconsultation.update({
         where: { id: parseInt(id, 10) },
         data: { sessionUrl: roomUrl, status: 'In Progress' },
@@ -54,7 +57,7 @@ async function handler(req, res) {
 
       return res.status(200).json({ success: true, roomUrl });
     } catch (error) {
-      console.error('Error starting video session:', error);
+      console.error('Error starting session:', error);
       return res.status(500).json({ error: 'Failed to start consultation session.' });
     }
   } else {

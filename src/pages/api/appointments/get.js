@@ -12,18 +12,25 @@ async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      const appointments = await prisma.appointment.findMany({
-        where: { userId: session.id },
-        include: {
-          facility: true,
-          teleconsultation: true,
-        },
+      // Fetch appointments for the user
+      const telemedicineAppointments = await prisma.appointment.findMany({
+        where: { userId: session.id, teleconsultationId: { not: null } },
+        include: { teleconsultation: true }, // Only fetch teleconsultation appointments
       });
 
-      return res.status(200).json({ success: true, appointments });
+      const facilityAppointments = await prisma.appointment.findMany({
+        where: { userId: session.id, facilityId: { not: null } },
+        include: { facility: true }, // Only fetch facility-based appointments
+      });
+
+      return res.status(200).json({
+        success: true,
+        telemedicineAppointments,
+        facilityAppointments,
+      });
     } catch (error) {
       console.error('Error fetching appointments:', error);
-      return res.status(500).json({ error: 'Failed to fetch appointments.' });
+      return res.status(500).json({ error: 'Failed to retrieve appointments.' });
     }
   } else {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -34,6 +41,6 @@ export default withIronSession(handler, {
   password: process.env.SECRET_COOKIE_PASSWORD,
   cookieName: 'next-iron-session/login',
   cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === 'production',
   },
 });
